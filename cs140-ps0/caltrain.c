@@ -1,5 +1,4 @@
 #include "pintos_thread.h"
-#include <stdio.h>
 
 struct station {
 	// FILL ME IN

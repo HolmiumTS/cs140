@@ -39,7 +39,7 @@ reaction_h(struct reaction *reaction)
 		cond_wait(&reaction->cond_h,&reaction->lock);
 	}
 	reaction->num_w--;
-	cond_signal(&reaction->cond_o,&reaction->lock);
+	cond_broadcast(&reaction->cond_o,&reaction->lock);
 	lock_release(&reaction->lock);
 }
 
@@ -48,11 +48,11 @@ reaction_o(struct reaction *reaction)
 {
 	// FILL ME IN
 	lock_acquire(&reaction->lock);
-	fprintf(stderr,"&&%d\n",reaction->num_h);
 	while(reaction->num_h<2){
 		cond_broadcast(&reaction->cond_h,&reaction->lock);
 		cond_wait(&reaction->cond_o,&reaction->lock);
 	}
+	reaction->num_o++;
 	reaction->num_h-=2;
 	reaction->num_w+=2;
 	make_water();
@@ -60,6 +60,8 @@ reaction_o(struct reaction *reaction)
 		cond_broadcast(&reaction->cond_h,&reaction->lock);
 		cond_wait(&reaction->cond_o,&reaction->lock);
 	}
+	//fprintf(stderr,"!!%d\n",reaction->num_w);
 	cond_broadcast(&reaction->cond_o,&reaction->lock);
+	//fprintf(stderr,"&&%d\n",reaction->num_o);
 	lock_release(&reaction->lock);
 }
